@@ -3,7 +3,6 @@ package tasks;
 import common.ApiPersonDto;
 import common.Person;
 import common.PersonConverter;
-import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -22,6 +21,9 @@ public class Task4 {
   }
 
   public List<ApiPersonDto> convert(List<Person> persons) {
-    return new ArrayList<>();
+    List<ApiPersonDto> lstResult = persons.stream()
+            .map(item -> personConverter.convert(item))
+            .toList();
+    return lstResult;
   }
 }
