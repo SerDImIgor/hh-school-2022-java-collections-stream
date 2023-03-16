@@ -15,16 +15,14 @@ import java.util.Map;
  */
 public class Task5 {
 
-  private final PersonConverter personConverter;
+	private final PersonConverter personConverter;
 
-  public Task5(PersonConverter personConverter) {
-    this.personConverter = personConverter;
-  }
+	public Task5(PersonConverter personConverter) {
+		this.personConverter = personConverter;
+	}
 
-  public List<ApiPersonDto> convert(List<Person> persons, Map<Integer, Integer> personAreaIds) {
-    List<ApiPersonDto> lstResult = persons.stream()
-            .map(item -> personConverter.convert(item,personAreaIds.get(item.getId())))
-            .toList();
-    return lstResult;
-  }
+	public List<ApiPersonDto> convert(List<Person> persons, Map<Integer, Integer> personAreaIds) {
+		return persons.stream()
+				.map(item -> personConverter.convert(item, personAreaIds.get(item.getId()))).toList();
+	}
 }

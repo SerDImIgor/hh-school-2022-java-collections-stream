@@ -14,16 +14,13 @@ FYI - DTO = Data Transfer Object - распространенный паттер
  */
 public class Task4 {
 
-  private final PersonConverter personConverter;
+	private final PersonConverter personConverter;
 
-  public Task4(PersonConverter personConverter) {
-    this.personConverter = personConverter;
-  }
+	public Task4(PersonConverter personConverter) {
+		this.personConverter = personConverter;
+	}
 
-  public List<ApiPersonDto> convert(List<Person> persons) {
-    List<ApiPersonDto> lstResult = persons.stream()
-            .map(item -> personConverter.convert(item))
-            .toList();
-    return lstResult;
-  }
+	public List<ApiPersonDto> convert(List<Person> persons) {
+		return persons.stream().map(personConverter::convert).toList();
+	}
 }

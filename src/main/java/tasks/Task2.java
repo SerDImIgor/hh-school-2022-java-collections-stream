@@ -2,6 +2,7 @@ package tasks;
 
 import common.Person;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -13,12 +14,9 @@ import java.util.stream.Stream;
  */
 public class Task2 {
 
-  public static List<Person> combineAndSortWithLimit(Collection<Person> persons1,
-                                                     Collection<Person> persons2,
-                                                     int limit) {
-    List<Person> lstResult = Stream.concat(persons1.stream(), persons2.stream())
-            .sorted((o1, o2)->o1.getCreatedAt().compareTo(o2.getCreatedAt()))
-            .limit(limit).toList();
-    return lstResult;
-  }
+	public static List<Person> combineAndSortWithLimit(Collection<Person> persons1, Collection<Person> persons2,
+			int limit) {
+		return Stream.concat(persons1.stream(), persons2.stream())
+				.sorted(Comparator.comparing((Person instrument) -> instrument.getCreatedAt())).limit(limit).toList();
+	}
 }

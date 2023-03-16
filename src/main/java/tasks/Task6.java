@@ -4,7 +4,6 @@ import common.Area;
 import common.Person;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,19 +16,10 @@ import java.util.stream.Collectors;
  */
 public class Task6 {
 
-  public static Set<String> getPersonDescriptions(Collection<Person> persons,
-                                                  Map<Integer, Set<Integer>> personAreaIds,
-                                                  Collection<Area> areas) {
-    //Set<String> lstResult = persons.stream().map(mapper)
-   
-    Set<String> vv = persons.stream().flatMap(person_item ->{
-          return personAreaIds.get(person_item.getId()).stream()
-                  .map(el_id -> areas.stream()
-                          .filter(arr -> arr.getId().equals(el_id))
-                          .map(arr -> { 
-                              return person_item.getFirstName() + " - " + arr.getName();})
-                          .findFirst().orElse(null) );
-      }).filter(obj ->Objects.nonNull(obj)).collect(Collectors.toSet());
-    return vv;
-  }
+	public static Set<String> getPersonDescriptions(Collection<Person> persons,
+			Map<Integer, Set<Integer>> personAreaIds, Collection<Area> areas) {
+		Map<Integer, Area> idArr = areas.stream().collect(Collectors.toMap(Area::getId, ar -> ar));
+		return persons.stream().flatMap(pr -> personAreaIds.get(pr.getId()).stream()
+				.map(el -> pr.getFirstName() + " - " + idArr.get(el).getName())).collect(Collectors.toSet());
+	}
 }

@@ -1,6 +1,8 @@
 package tasks;
+
 import common.Person;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,54 +23,47 @@ P.P.S Здесь ваши правки желательно прокоммент
  */
 public class Task8 {
 
-  //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
-  public List<String> getNames(List<Person> persons) {
-    return persons.stream()
-            .skip(1)
-            .map(Person::getFirstName)
-            .collect(Collectors.toList());
-  }
-  // ну и различные имена тоже хочется
-  // тут никто не говорил, что первый не берём
-  public static Set<String> getDifferentNames(List<Person> persons) {
-    return persons.stream().map(Person::getFirstName)
-            .distinct()
-            .collect(Collectors.toSet());
-  }
-  //Для фронтов выдадим полное имя, а то сами не могут
-  // Я посчитал, что если хотябы один будет пустой, то выдавть пусто.
-  // По предыдущей логике было бы не понятно какое поле пусто Фамилия Имя или Отчество
-  public String convertPersonToString(Person person) {
-    if (
-            person.getSecondName()==null || person.getSecondName().isEmpty() ||
-            person.getFirstName() == null || person.getFirstName().isEmpty() ||
-            person.getMiddleName() == null || person.getMiddleName().isEmpty()
-        ) {
-      return "";
-    }
-    return person.getSecondName() + " " + person.getFirstName() + " " + person.getMiddleName();
-  }
+	// Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со
+	// второй
+	// Поменял, так как нельзя менять колекцию persons. Тот кто нам её передал
+	// врядли надеялся, что мы её поменяем
+	// Если в коллекции n элементов и мы вызовем функцию n раз, колекция будет пуста
+	public List<String> getNames(List<Person> persons) {
+		return persons.stream().skip(1).map(Person::getFirstName).collect(Collectors.toList());
+	}
 
-  public <T> Predicate<T> distinctByKey (Function<? super T, ?> keyExtractor) {
-    Map<Object, Boolean> seen = new ConcurrentHashMap<>(); 
-    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null; 
-  }
-  // словарь id персоны -> ее имя
-  public Map<Integer, String> getPersonNames(Collection<Person> persons) {
-    Map<Integer, String> map = persons.stream()
-            .filter(distinctByKey(Person::getId))
-            .filter(pr -> !convertPersonToString(pr).isEmpty() )
-            .collect(Collectors.toMap(Person::getId,person->convertPersonToString(person)));
-    return map;
-  }
+	// ну и различные имена тоже хочется
+	public Set<String> getDifferentNames(List<Person> persons) {
+		return new HashSet<>(getNames(persons));
+	}
 
-  // есть ли совпадающие в двух коллекциях персоны?
-  public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    return persons1.stream().anyMatch(pr1 -> persons2.stream().anyMatch(pr2 -> pr2.equals(pr1)));
-  }
+	// Для фронтов выдадим полное имя, а то сами не могут
+	// Я посчитал, что если хотябы один будет пустой, то выдавть пусто.
+	// По предыдущей логике было бы не понятно какое поле пусто Фамилия Имя или
+	// Отчество
+	public String convertPersonToString(Person person) {
+		return Stream.of(person.getSecondName(), person.getFirstName(), person.getMiddleName())
+				.filter(s -> s != null && !s.isEmpty()).collect(Collectors.joining(" "));
+	}
 
-  // вот тут посчитал, что считаем количестов чётных чисел
-  public long countEven(Stream<Integer> numbers) {
-    return numbers.filter(num -> num % 2 == 0).mapToInt(num -> 1).sum();
-  }
+	public <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
+	// словарь id персоны -> ее имя
+	public Map<Integer, String> getPersonNames(Collection<Person> persons) {
+		return persons.stream().collect(Collectors.toMap(Person::getId, person -> convertPersonToString(person)));
+	}
+
+	// есть ли совпадающие в двух коллекциях персоны?
+	public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
+		Set<Person> personSet = new HashSet<>(persons1);
+		return persons2.stream().anyMatch(pr1 -> personSet.contains(pr1));
+	}
+
+	// вот тут посчитал, что считаем количестов чётных чисел
+	public long countEven(Stream<Integer> numbers) {
+		return numbers.filter(num -> num % 2 == 0).count();
+	}
 }

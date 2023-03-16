@@ -4,7 +4,7 @@ import common.Person;
 import common.PersonService;
 import java.util.List;
 import java.util.Set;
-import java.util.Comparator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /*
@@ -16,17 +16,15 @@ import java.util.stream.Collectors;
  */
 public class Task1 {
 
-  private final PersonService personService;
+	private final PersonService personService;
 
-  public Task1(PersonService personService) {
-    this.personService = personService;
-  }
+	public Task1(PersonService personService) {
+		this.personService = personService;
+	}
 
-  public List<Person> findOrderedPersons(List<Integer> personIds) {
-    Set<Person> persons = personService.findPersons(personIds);
-    List<Person> sortPerson = persons.stream()
-            .sorted(Comparator.comparing(item -> personIds.indexOf(item.getId())))
-            .collect(Collectors.toList());
-    return sortPerson;
-  }
+	public List<Person> findOrderedPersons(List<Integer> personIds) {
+		Set<Person> persons = personService.findPersons(personIds);
+		Map<Integer, Person> personCollect = persons.stream().collect(Collectors.toMap(Person::getId, pr -> pr));
+		return personIds.stream().map(id -> personCollect.get(id)).toList();
+	}
 }
